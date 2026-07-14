@@ -1,37 +1,254 @@
 /*
  * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
+ * Sistema OMR - Estilos Globales Mejorados
  */
 
-/* Core CSS required for Ionic components to work properly */
+// Core Ionic CSS
 @import "@ionic/angular/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
-
-/* Optional CSS utils that can be commented out */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+// Dark Mode
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+// ====================================
+// ESTILOS GLOBALES PERSONALIZADOS
+// ====================================
+
+// Scrollbar personalizado
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ion-color-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ion-color-medium);
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--ion-color-dark);
+  }
+}
+
+// Inputs y elementos de formulario
+ion-input,
+ion-textarea,
+ion-select {
+  --padding-start: 0;
+  --padding-end: 0;
+
+  input,
+  textarea,
+  select {
+    border-radius: var(--radius-md) !important;
+    border: 2px solid var(--ion-color-light) !important;
+    font-family: var(--font-family-primary);
+    font-size: 1rem;
+    padding: var(--spacing-md) var(--spacing-lg);
+    transition: all 0.3s ease;
+
+    &:focus {
+      border-color: var(--ion-color-primary) !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+  }
+}
+
+// Botones mejorados
+ion-button {
+  --border-radius: var(--radius-md);
+  --padding-start: var(--spacing-lg);
+  --padding-end: var(--spacing-lg);
+  --padding-top: var(--spacing-md);
+  --padding-bottom: var(--spacing-md);
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+
+  // Estados por color
+  &[color="primary"] {
+    --box-shadow: var(--shadow-md);
+
+    &:hover:not(:disabled) {
+      --box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+  }
+
+  &[color="success"] {
+    --box-shadow: var(--shadow-md);
+
+    &:hover:not(:disabled) {
+      --box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+  }
+
+  &[color="warning"] {
+    --box-shadow: var(--shadow-md);
+
+    &:hover:not(:disabled) {
+      --box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Cards mejoradas
+ion-card {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-4px);
+  }
+}
+
+ion-card-header {
+  padding: var(--spacing-lg);
+  border-bottom: 2px solid var(--ion-color-light);
+}
+
+ion-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+}
+
+ion-card-content {
+  padding: var(--spacing-lg);
+}
+
+// Header/Toolbar mejorado
+ion-header {
+  box-shadow: var(--shadow-md);
+  border-bottom: 2px solid var(--ion-color-primary);
+}
+
+ion-toolbar {
+  --padding-start: var(--spacing-lg);
+  --padding-end: var(--spacing-lg);
+}
+
+// Spinner personalizado
+ion-spinner {
+  --color: var(--ion-color-primary);
+}
+
+// Iconos
+ion-icon {
+  transition: all 0.3s ease;
+}
+
+// Alertas y estados
+.alert-success {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: rgba(16, 185, 129, 0.1);
+  border-left: 4px solid var(--ion-color-success);
+  border-radius: var(--radius-md);
+  color: var(--ion-color-success);
+  font-weight: 500;
+}
+
+.alert-danger {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 4px solid var(--ion-color-danger);
+  border-radius: var(--radius-md);
+  color: var(--ion-color-danger);
+  font-weight: 500;
+}
+
+.alert-warning {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 4px solid var(--ion-color-warning);
+  border-radius: var(--radius-md);
+  color: var(--ion-color-warning);
+  font-weight: 500;
+}
+
+.alert-info {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: rgba(96, 165, 250, 0.1);
+  border-left: 4px solid var(--ion-color-omr-info);
+  border-radius: var(--radius-md);
+  color: var(--ion-color-omr-info);
+  font-weight: 500;
+}
+
+// Spinner animado personalizado
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Contenedor principal
+ion-content {
+  --background: var(--ion-color-light);
+
+  .ion-padding {
+    padding-top: var(--spacing-xl);
+    padding-bottom: var(--spacing-xl);
+  }
+}
+
+// Textos
+p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+strong {
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+code {
+  background: var(--ion-color-light);
+  padding: 2px var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-mono);
+  font-size: 0.85rem;
+  color: var(--ion-color-primary);
+}

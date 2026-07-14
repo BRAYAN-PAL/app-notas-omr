@@ -1,0 +1,98 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>
+      <ion-icon name="settings-outline"></ion-icon>
+      Configuración OMR
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div class="logo-container">
+    <ion-icon name="scan-outline" class="logo-icon"></ion-icon>
+    <h1>Sistema OMR</h1>
+    <p class="subtitle">Reconocimiento Óptico de Marcas</p>
+  </div>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>🔗 Servidor Python (FastAPI + OpenCV)</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Dirección IP del servidor</ion-label>
+        <ion-input
+          [(ngModel)]="ipServidor"
+          placeholder="Ej: 192.168.1.100"
+          type="text"
+          clearInput
+          (ionInput)="mensajeError = ''; mensajeExito = ''">
+        </ion-input>
+      </ion-item>
+
+      <p class="ayuda">
+        Ingresa la IP de la computadora donde se ejecuta el backend Python con OpenCV.
+        El puerto 8000 se usará automáticamente.
+      </p>
+
+      <!-- Mensajes -->
+      <ion-text color="danger" *ngIf="mensajeError">
+        <p class="mensaje">{{ mensajeError }}</p>
+      </ion-text>
+
+      <ion-text color="success" *ngIf="mensajeExito">
+        <p class="mensaje">{{ mensajeExito }}</p>
+      </ion-text>
+
+      <ion-button
+        expand="block"
+        color="primary"
+        (click)="guardarConfiguracion()"
+        class="btn-guardar">
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        Guardar Configuración
+      </ion-button>
+
+      <ion-button
+        expand="block"
+        color="tertiary"
+        (click)="probarConexion()"
+        [disabled]="probando">
+        <ion-spinner *ngIf="probando" slot="start" name="dots"></ion-spinner>
+        <ion-icon *ngIf="!probando" name="pulse-outline" slot="start"></ion-icon>
+        {{ probando ? 'Probando conexión...' : 'Probar Conexión' }}
+      </ion-button>
+
+      <ion-button
+        expand="block"
+        fill="outline"
+        color="medium"
+        (click)="irAInicio()">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Volver al Inicio
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <div class="info" *ngIf="ipGuardada">
+    <ion-icon name="checkmark-circle" color="success"></ion-icon>
+    <span>Conectando a: <strong>{{ ipServidor }}:8000</strong></span>
+  </div>
+
+  <ion-card class="info-card">
+    <ion-card-header>
+      <ion-card-title>📋 Instrucciones</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ol>
+        <li>Ejecuta el servidor Python en tu PC</li>
+        <li>Ingresa la IP de tu PC aquí</li>
+        <li>Guarda y vuelve al inicio</li>
+        <li>Sube balotario (TXT) y fotos de exámenes</li>
+      </ol>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

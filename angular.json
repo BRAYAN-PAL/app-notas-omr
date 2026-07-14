@@ -49,8 +49,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "7kb",
+                  "maximumError": "8kb"
                 }
               ],
               "fileReplacements": [
@@ -68,7 +68,7 @@
               "namedChunks": true
             },
             "ci": {
-              "progress": false
+              
             }
           },
           "defaultConfiguration": "production"
@@ -83,7 +83,7 @@
               "buildTarget": "app:build:development"
             },
             "ci": {
-              "progress": false
+              
             }
           },
           "defaultConfiguration": "development"
@@ -114,7 +114,6 @@
           },
           "configurations": {
             "ci": {
-              "progress": false,
               "watch": false
             }
           }
@@ -129,7 +128,10 @@
     }
   },
   "cli": {
-    "schematicCollections": ["@ionic/angular-toolkit"]
+    "schematicCollections": [
+      "@ionic/angular-toolkit"
+    ],
+    "analytics": false
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {

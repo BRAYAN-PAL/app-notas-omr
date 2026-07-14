@@ -1,20 +1,141 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
+<ion-header>
+  <ion-toolbar color="primary">
     <ion-title>
-      Blank
+      📊 Corrector OMR
     </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="irAConfiguracion()" title="Configuración">
+        <ion-icon name="settings-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <!-- ESTADO DEL SERVIDOR -->
+  <div class="server-status" [class.conectado]="servidorConectado" [class.desconectado]="!servidorConectado">
+    <ion-icon [name]="servidorConectado ? 'checkmark-circle' : 'cloud-offline-outline'"></ion-icon>
+    <span>
+      {{ servidorConectado ? '✓ Servidor conectado' : '✕ Sin conexión' }}
+    </span>
   </div>
+
+  <!-- BALOTARIO -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>📖 Balotario (Respuestas Correctas)</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <input
+        type="file"
+        #balotarioInput
+        hidden
+        accept=".txt,.pdf,.doc,.docx,.jpg,.jpeg,.png"
+        (change)="seleccionarBalotario($event)"
+      >
+
+      <div class="button-group">
+        <ion-button
+          expand="block"
+          color="primary"
+          (click)="balotarioInput.click()"
+          [disabled]="cargando || !servidorConectado">
+          <ion-icon name="document-text-outline" slot="start"></ion-icon>
+          Subir Balotario
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          color="warning"
+          (click)="tomarFotoBalotario()"
+          [disabled]="cargando || !servidorConectado">
+          <ion-icon name="camera-outline" slot="start"></ion-icon>
+          Tomar Foto Balotario
+        </ion-button>
+      </div>
+
+      <div *ngIf="cargando" class="cargando">
+        <ion-spinner name="dots"></ion-spinner>
+        <span>Cargando balotario...</span>
+      </div>
+
+      <div *ngIf="mensaje && !cargando" class="mensaje">
+        {{ mensaje }}
+      </div>
+
+      <div *ngIf="hayBalotario" class="balotario-list">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <div>
+          <strong>{{ totalPreguntas }} preguntas</strong>
+          <br><small>{{ respuestasBalotario }}</small>
+        </div>
+      </div>
+
+      <div class="info-formato">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <span>Formatos: TXT, PDF, Word, imagen o foto. Ejemplo en texto: <code>1A 2C 3B 4D 5A</code></span>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- EXAMEN -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>📄 Examen del Alumno (OMR)</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <input
+        type="file"
+        #examenInput
+        hidden
+        accept=".jpg,.jpeg,.png,.txt"
+        (change)="seleccionarExamen($event)"
+      >
+
+      <!-- Botones de acción -->
+      <div class="button-group">
+        <ion-button
+          expand="block"
+          color="success"
+          (click)="examenInput.click()"
+          [disabled]="cargando || !hayBalotario || !servidorConectado">
+          <ion-icon name="image-outline" slot="start"></ion-icon>
+          Subir Foto / TXT
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          color="warning"
+          (click)="tomarFotoExamen()"
+          [disabled]="cargando || !hayBalotario || !servidorConectado">
+          <ion-icon name="camera-outline" slot="start"></ion-icon>
+          Tomar Foto
+        </ion-button>
+      </div>
+
+      <!-- Avisos -->
+      <div *ngIf="!servidorConectado" class="aviso">
+        <ion-icon name="warning-outline"></ion-icon>
+        <span>Conecta al servidor en Configuración</span>
+      </div>
+
+      <div *ngIf="servidorConectado && !hayBalotario" class="aviso">
+        <ion-icon name="warning-outline"></ion-icon>
+        <span>Primero carga un Balotario</span>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="cargando" class="cargando">
+        <ion-spinner name="dots"></ion-spinner>
+        <span>Analizando con OpenCV...</span>
+      </div>
+
+      <!-- Resultado -->
+      <div *ngIf="nota && !cargando" class="resultado" [innerHTML]="nota"></div>
+    </ion-card-content>
+  </ion-card>
+
 </ion-content>
