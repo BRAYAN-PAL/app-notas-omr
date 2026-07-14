@@ -22,10 +22,10 @@
 
     <ion-card-content>
       <ion-item>
-        <ion-label position="stacked">Dirección IP del servidor</ion-label>
+        <ion-label position="stacked">Dirección del servidor</ion-label>
         <ion-input
           [(ngModel)]="ipServidor"
-          placeholder="Ej: 192.168.1.100"
+          placeholder="Ej: 192.168.1.100 o midominio.onrender.com"
           type="text"
           clearInput
           (ionInput)="mensajeError = ''; mensajeExito = ''">
@@ -33,8 +33,8 @@
       </ion-item>
 
       <p class="ayuda">
-        Ingresa la IP de la computadora donde se ejecuta el backend Python con OpenCV.
-        El puerto 8000 se usará automáticamente.
+        Ingresa la IP o dominio del servidor donde se ejecuta el backend Python con OpenCV.
+        Ejemplo: <strong>omr-api-celz.onrender.com</strong>
       </p>
 
       <!-- Mensajes -->

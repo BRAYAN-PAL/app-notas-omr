@@ -65,15 +65,21 @@ export class ConfiguracionPage implements OnInit {
     this.ipGuardada = this.ipServidor !== '127.0.0.1';
   }
 
-  validarIP(ip: string): boolean {
-    const regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
-    const match = ip.match(regex);
-    if (!match) return false;
-    for (let i = 1; i <= 4; i++) {
-      const num = parseInt(match[i], 10);
-      if (num < 0 || num > 255) return false;
+  validarServidor(servidor: string): boolean {
+    // Acepta IPs (192.168.1.100) o dominios (ejemplo.onrender.com)
+    const esIP = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.test(servidor);
+    const esDominio = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*$/.test(servidor);
+
+    if (esIP) {
+      const partes = servidor.split('.');
+      for (const parte of partes) {
+        const num = parseInt(parte, 10);
+        if (num < 0 || num > 255) return false;
+      }
+      return true;
     }
-    return true;
+
+    return esDominio && servidor.includes('.');
   }
 
   async probarConexion() {
@@ -82,8 +88,8 @@ export class ConfiguracionPage implements OnInit {
     this.probando = true;
 
     const ip = this.ipServidor.trim();
-    if (!ip || !this.validarIP(ip)) {
-      this.mensajeError = 'Ingresa una IP válida primero';
+    if (!ip || !this.validarServidor(ip)) {
+      this.mensajeError = 'Ingresa una IP o dominio válido primero';
       this.probando = false;
       return;
     }
@@ -111,8 +117,8 @@ export class ConfiguracionPage implements OnInit {
       return;
     }
 
-    if (!this.validarIP(ip)) {
-      this.mensajeError = 'Formato de IP inválido. Ejemplo: 192.168.1.100';
+    if (!this.validarServidor(ip)) {
+      this.mensajeError = 'Formato inválido. Ejemplo: 192.168.1.100 o midominio.onrender.com';
       return;
     }
 

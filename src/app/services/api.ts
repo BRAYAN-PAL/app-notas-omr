@@ -50,11 +50,26 @@ export class ApiService {
   private async cargarIpGuardada() {
     const { value } = await Preferences.get({ key: 'servidor_ip' });
     if (value) {
-      this.apiBase = `http://${value}:8000`;
+      this.apiBase = this.construirBaseUrl(value);
     } else {
       const defaultIp = this.obtenerIpPorDefecto();
-      this.apiBase = `http://${defaultIp}:8000`;
+      this.apiBase = this.construirBaseUrl(defaultIp);
     }
+  }
+
+  private construirBaseUrl(servidor: string): string {
+    // Si tiene puntos y NO es una IP local, usar HTTPS
+    const esDominioRemoto = servidor.includes('.') && 
+      !servidor.startsWith('192.168.') && 
+      !servidor.startsWith('10.') && 
+      !servidor.startsWith('172.') &&
+      servidor !== '127.0.0.1' &&
+      servidor !== 'localhost';
+
+    if (esDominioRemoto) {
+      return `https://${servidor}`;
+    }
+    return `http://${servidor}:8000`;
   }
 
   private obtenerIpPorDefecto(): string {
@@ -72,7 +87,7 @@ export class ApiService {
 
   async setIp(ip: string) {
     await Preferences.set({ key: 'servidor_ip', value: ip });
-    this.apiBase = `http://${ip}:8000`;
+    this.apiBase = this.construirBaseUrl(ip);
   }
 
   async getIp(): Promise<string> {
