@@ -126,6 +126,7 @@ balotario_actual = {
 def preprocesar_imagen(ruta_imagen: str) -> np.ndarray:
     """
     Carga y preprocesa una imagen para OMR:
+    - Redimensiona manteniendo proporción
     - Convierte a escala de grises
     - Aplica desenfoque Gaussiano para reducir ruido
     - Binarización adaptativa
@@ -148,19 +149,22 @@ def preprocesar_imagen(ruta_imagen: str) -> np.ndarray:
     # Escala de grises
     gris = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # Desenfoque Gaussiano
-    gris = cv2.GaussianBlur(gris, (5, 5), 0)
+    # Desenfoque Gaussiano más fuerte para fotos de celular
+    gris = cv2.GaussianBlur(gris, (7, 7), 0)
 
-    # Binarización adaptativa
+    # Binarización adaptativa con parámetros más tolerantes
     binaria = cv2.adaptiveThreshold(
         gris, 255,
         cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
         cv2.THRESH_BINARY_INV,
-        21, 5
+        15, 3  # Reducido de (21,5) a (15,3) para detectar más
     )
 
+    # Operaciones morfológicas para limpiar ruido
     kernel = np.ones((3, 3), np.uint8)
     binaria = cv2.morphologyEx(binaria, cv2.MORPH_OPEN, kernel)
+    # Cerrar pequeños huecos
+    binaria = cv2.morphologyEx(binaria, cv2.MORPH_CLOSE, kernel)
 
     return binaria
 
@@ -168,49 +172,84 @@ def preprocesar_imagen(ruta_imagen: str) -> np.ndarray:
 def detectar_burbujas(imagen_binaria: np.ndarray) -> List[dict]:
     """
     Detecta todas las burbujas (círculos) en la hoja de examen.
+    Usa HoughCircles como alternativa para detectar círculos aunque estén
+    parcialmente rellenos o borrosos.
     Retorna lista de diccionarios con posición y radio.
     """
-    # Encontrar contornos
+    burbujas = []
+    alto, ancho = imagen_binaria.shape
+    area_total = ancho * alto
+
+    # Método 1: Detección por contornos (circularidad)
     contornos, _ = cv2.findContours(
         imagen_binaria,
         cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE
     )
 
-    burbujas = []
-    alto, ancho = imagen_binaria.shape
-
     for contorno in contornos:
         area = cv2.contourArea(contorno)
 
-        # Filtrar por área mínima y máxima (burbujas de tamaño razonable)
-        area_min = (ancho * alto) * 0.0005   # 0.05% del área total
-        area_max = (ancho * alto) * 0.02     # 2% del área total
+        # Filtrar por área: entre 0.02% y 5% del área total (más tolerante)
+        area_min = area_total * 0.0002   # 0.02%
+        area_max = area_total * 0.05     # 5%
 
         if area < area_min or area > area_max:
             continue
 
-        # Calcular circularidad
+        # Calcular circularidad (más tolerante: > 0.3)
         perimetro = cv2.arcLength(contorno, True)
         if perimetro == 0:
             continue
 
         circularidad = 4 * np.pi * area / (perimetro * perimetro)
 
-        # Las burbujas tienen alta circularidad (> 0.7)
-        if circularidad < 0.7:
+        if circularidad < 0.3:
             continue
 
-        # Obtener centro y radio del círculo mínimo
+        # Obtener centro y radio
         (x, y), radio = cv2.minEnclosingCircle(contorno)
 
         burbujas.append({
             "x": int(x),
             "y": int(y),
-            "radio": int(radio),
+            "radio": max(int(radio), 3),
             "area": area,
             "circularidad": circularidad
         })
+
+    # Método 2: Si no se detectaron suficientes burbujas, usar HoughCircles
+    if len(burbujas) < 5:
+        # Invertir la imagen para HoughCircles (necesita bordes blancos sobre fondo negro)
+        inverted = cv2.bitwise_not(imagen_binaria)
+        circles = cv2.HoughCircles(
+            inverted,
+            cv2.HOUGH_GRADIENT,
+            dp=1.2,
+            minDist=15,
+            param1=50,
+            param2=20,
+            minRadius=5,
+            maxRadius=50
+        )
+
+        if circles is not None:
+            circles = np.round(circles[0, :]).astype("int")
+            for (x, y, r) in circles:
+                # Verificar que no esté duplicado
+                duplicado = False
+                for b in burbujas:
+                    if abs(b["x"] - x) < 10 and abs(b["y"] - y) < 10:
+                        duplicado = True
+                        break
+                if not duplicado:
+                    burbujas.append({
+                        "x": x,
+                        "y": y,
+                        "radio": r,
+                        "area": np.pi * r * r,
+                        "circularidad": 1.0
+                    })
 
     return burbujas
 
@@ -218,11 +257,12 @@ def detectar_burbujas(imagen_binaria: np.ndarray) -> List[dict]:
 def agrupar_burbujas_por_pregunta(
     burbujas: List[dict],
     num_preguntas: int,
-    num_opciones: int = 4
+    num_opciones: int = 5
 ) -> List[List[dict]]:
     """
     Agrupa las burbujas detectadas en filas (preguntas) y columnas (opciones).
     Las ordena por posición vertical (Y) primero y horizontal (X) después.
+    Versión mejorada para fotos de celular.
     """
     if not burbujas:
         return []
@@ -230,19 +270,23 @@ def agrupar_burbujas_por_pregunta(
     # Ordenar burbujas por Y (fila)
     burbujas_ordenadas = sorted(burbujas, key=lambda b: b["y"])
 
+    # Calcular tolerancia vertical basada en la mediana de diferencias Y
+    if len(burbujas_ordenadas) > 1:
+        diffs_y = [abs(burbujas_ordenadas[i+1]["y"] - burbujas_ordenadas[i]["y"])
+                   for i in range(len(burbujas_ordenadas)-1)]
+        diff_mediana = float(np.median(diffs_y)) if diffs_y else 20
+        tolerancia_y = max(15, int(diff_mediana * 0.6))
+    else:
+        tolerancia_y = 20
+
     # Agrupar en filas según proximidad vertical
     filas = []
     fila_actual = [burbujas_ordenadas[0]]
-    radios = [b.get("radio", 8) for b in burbujas_ordenadas]
-    radio_medio = float(np.median(radios)) if radios else 8.0
-    tolerancia_y = max(12, int(radio_medio * 2.2))
 
     for burbuja in burbujas_ordenadas[1:]:
-        # Si está cerca verticalmente, misma fila
         if abs(burbuja["y"] - fila_actual[-1]["y"]) < tolerancia_y:
             fila_actual.append(burbuja)
         else:
-            # Ordenar fila por X
             fila_actual.sort(key=lambda b: b["x"])
             filas.append(fila_actual)
             fila_actual = [burbuja]
@@ -265,13 +309,13 @@ def agrupar_burbujas_por_pregunta(
 def analizar_burbujas_rellenas(
     imagen_binaria: np.ndarray,
     burbujas_agrupadas: List[List[dict]],
-    umbral_relleno: float = 0.4
+    umbral_relleno: float = 0.25  # Reducido de 0.4 a 0.25
 ) -> List[str]:
     """
     Analiza cada grupo de burbujas para determinar cuál está rellena.
-    Retorna las letras de las opciones seleccionadas (A, B, C, D).
+    Retorna las letras de las opciones seleccionadas (A, B, C, D, E).
     """
-    opciones_letras = ['A', 'B', 'C', 'D', 'E']
+    opciones_letras = ['A', 'B', 'C', 'D', 'E', 'F']
     respuestas = []
 
     for fila in burbujas_agrupadas:
@@ -435,8 +479,9 @@ def extraer_respuestas_balotario(
     if nombre.endswith((".jpg", ".jpeg", ".png")):
         # Para imágenes/fotos del balotario se intenta lectura OMR con varios ajustes.
         estrategias_omr = [
-            {"num_opciones": OMR_OPCIONES, "umbral_relleno": 0.28},
-            {"num_opciones": OMR_OPCIONES, "umbral_relleno": 0.22},
+            {"num_opciones": OMR_OPCIONES, "umbral_relleno": 0.20},
+            {"num_opciones": OMR_OPCIONES, "umbral_relleno": 0.15},
+            {"num_opciones": OMR_OPCIONES, "umbral_relleno": 0.10},
         ]
 
         mejor_respuesta: List[str] = []
