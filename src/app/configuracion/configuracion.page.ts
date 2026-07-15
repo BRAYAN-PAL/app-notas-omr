@@ -18,7 +18,8 @@ import {
   IonInput,
   IonIcon,
   IonText,
-  IonSpinner
+  IonSpinner,
+  IonButtons
 } from '@ionic/angular/standalone';
 
 import { ApiService } from '../services/api';
@@ -44,7 +45,8 @@ import { ApiService } from '../services/api';
     IonInput,
     IonIcon,
     IonText,
-    IonSpinner
+    IonSpinner,
+    IonButtons
   ]
 })
 export class ConfiguracionPage implements OnInit {

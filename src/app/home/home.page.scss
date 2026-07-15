@@ -1,6 +1,14 @@
 // ====================================
-// HOME PAGE - ESTILOS MEJORADOS
+// BOTÓN CONFIGURACIÓN BLANCO
 // ====================================
+.btn-config {
+  --color: white !important;
+
+  ion-icon {
+    color: white !important;
+    fill: white !important;
+  }
+}
 
 // Animaciones
 @keyframes fadeInUp {

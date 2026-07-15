@@ -2,6 +2,17 @@
 // CONFIGURACION PAGE - ESTILOS MEJORADOS
 // ====================================
 
+// Botón de regreso blanco
+.btn-back {
+  --color: white !important;
+  
+  ion-icon {
+    color: white !important;
+    fill: white !important;
+    font-size: 1.5rem;
+  }
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;

@@ -1,8 +1,13 @@
 <ion-header>
   <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="irAInicio()" class="btn-back">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
     <ion-title>
       <ion-icon name="settings-outline"></ion-icon>
-      Configuración OMR
+      Configuración
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -70,8 +75,8 @@
         fill="outline"
         color="medium"
         (click)="irAInicio()">
-        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
-        Volver al Inicio
+        <ion-icon name="home-outline" slot="start"></ion-icon>
+        Ir al Inicio
       </ion-button>
     </ion-card-content>
   </ion-card>
@@ -87,11 +92,15 @@
     </ion-card-header>
     <ion-card-content>
       <ol>
-        <li>Ejecuta el servidor Python en tu PC</li>
-        <li>Ingresa la IP de tu PC aquí</li>
-        <li>Guarda y vuelve al inicio</li>
+        <li>Ingresa la IP o dominio del servidor</li>
+        <li>Presiona <strong>"Guardar"</strong></li>
+        <li>Presiona <strong>"Probar Conexión"</strong></li>
+        <li>Vuelve al inicio con la flecha ←</li>
         <li>Sube balotario (TXT) y fotos de exámenes</li>
       </ol>
+      <p style="margin-top: 10px; font-size: 0.85rem; color: var(--ion-color-medium);">
+        🌐 Si usas Render: <strong>omr-api-celz.onrender.com</strong>
+      </p>
     </ion-card-content>
   </ion-card>
 
