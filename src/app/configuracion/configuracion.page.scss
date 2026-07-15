@@ -1,112 +1,172 @@
-// CONFIGURACION PAGE - ESTILOS SIMPLIFICADOS
+/* ============================================
+   CONFIGURACION PAGE - ESTILOS PROFESIONALES
+   ============================================ */
+
+/* ---- BOTON REGRESO BLANCO ---- */
 .btn-back {
-  --color: white !important;
+  --color: #ffffff !important;
 }
 .btn-back ion-icon {
-  color: white !important;
+  color: #ffffff !important;
   font-size: 1.5rem;
 }
 
+/* ---- LOGO ---- */
 .logo-container {
   text-align: center;
-  padding: 32px 16px;
-}
-.logo-icon {
-  font-size: 4.5rem;
-  color: var(--ion-color-primary);
-  display: block;
-  margin-bottom: 16px;
-}
-h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin: 8px 0 4px;
-}
-.subtitle {
-  color: var(--ion-color-medium);
-  font-size: 0.95rem;
+  padding: 30px 16px 10px;
+
+  .logo-icon {
+    font-size: 4.5rem;
+    color: var(--ion-color-primary, #3880ff);
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 8px 0 4px;
+    color: var(--ion-color-dark, #222428);
+  }
+
+  .subtitle {
+    color: var(--ion-color-medium, #92949c);
+    font-size: 0.95rem;
+    margin: 0;
+    font-weight: 500;
+  }
 }
 
+/* ---- CARDS ---- */
 ion-card {
   margin-bottom: 20px;
   border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  background: #ffffff;
 }
+
 ion-card-header {
-  background: var(--ion-color-primary);
-  color: white;
+  background: var(--ion-color-primary, #3880ff);
+  color: #ffffff;
   padding: 16px;
   border-radius: 16px 16px 0 0;
 }
+
 ion-card-title {
-  color: white;
+  color: #ffffff;
   font-size: 1.15rem;
   font-weight: 700;
 }
+
 ion-card-content {
   padding: 16px;
 }
+
 ion-card.info-card {
-  background: rgba(37,99,235,0.05);
-  border: 2px solid var(--ion-color-primary);
+  background: #f0f5ff;
+  border: 2px solid var(--ion-color-primary, #3880ff);
 }
 
+/* ---- ITEMS ---- */
 ion-item {
   --padding-start: 0;
   --padding-end: 0;
   margin-bottom: 16px;
-}
-ion-item ion-label {
-  font-weight: 600;
-}
-ion-item ion-input {
-  padding: 12px 16px;
-  border: 2px solid var(--ion-color-light);
-  border-radius: 8px;
+
+  ion-label {
+    font-weight: 600;
+    color: var(--ion-color-dark, #222428);
+    margin-bottom: 6px;
+  }
+
+  ion-input {
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
 }
 
+/* ---- BOTONES ---- */
 ion-button {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   --border-radius: 12px;
   font-weight: 600;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
 }
 
+/* ---- AYUDA ---- */
 .ayuda {
   font-size: 0.85rem;
-  color: var(--ion-color-medium);
-  padding: 8px 16px 0;
+  color: var(--ion-color-medium, #92949c);
+  padding: 8px 0 0;
+  margin: 0;
   line-height: 1.6;
 }
 
-.mensaje {
+/* ---- MENSAJES ---- */
+ion-text[color="danger"] .mensaje,
+ion-text[color="success"] .mensaje {
   padding: 12px 16px;
   margin: 8px 0;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 600;
   text-align: center;
+  font-size: 0.9rem;
+}
+ion-text[color="danger"] .mensaje {
+  background: #fee2e2;
+  border-left: 5px solid #ef4444;
+}
+ion-text[color="success"] .mensaje {
+  background: #d1fae5;
+  border-left: 5px solid #10b981;
 }
 
+/* ---- INFO CONEXION ---- */
 .info {
   display: flex;
   align-items: center;
   gap: 8px;
   justify-content: center;
-  padding: 12px;
+  padding: 14px 16px;
   font-weight: 600;
-  background: rgba(37,99,235,0.1);
-  border-radius: 8px;
-  border-left: 4px solid var(--ion-color-primary);
-  color: var(--ion-color-primary);
-}
-
-.info-card ol {
-  padding-left: 20px;
-}
-.info-card ol li {
-  margin-bottom: 8px;
   font-size: 0.9rem;
-  line-height: 1.6;
+  background: #dbeafe;
+  border-radius: 10px;
+  border-left: 5px solid var(--ion-color-primary, #3880ff);
+  color: var(--ion-color-primary, #3880ff);
+  margin-bottom: 20px;
+
+  ion-icon {
+    font-size: 1.3rem;
+  }
 }
 
+/* ---- INSTRUCCIONES ---- */
+.info-card {
+  ol {
+    padding-left: 20px;
+    margin: 0;
+
+    li {
+      margin-bottom: 10px;
+      color: var(--ion-color-dark, #222428);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+  }
+
+  p {
+    margin-top: 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* ---- BOTON GUARDAR ---- */
 .btn-guardar {
-  margin-top: 20px;
+  margin-top: 8px;
 }
